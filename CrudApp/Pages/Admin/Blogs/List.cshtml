@@ -1,0 +1,34 @@
+﻿@page
+@model CrudApp.Pages.Admin.Blogs.ListModel
+@{
+}
+
+<h1 class="mb-5"> All Application Posts</h1>
+
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>                
+                <td>Id</td>
+                <td>Name</td>
+                <td>Action</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var blogpost in Model.BlogPosts)
+            {
+                <tr>                    
+                    <td>@blogpost.Id</td>
+                    <td>@blogpost.Name</td>
+                    <td><a class="btn btn-info" href="/Admin/Blogs/Edit/@blogpost.Id">Edit</a></td>
+                    <td>
+                        <form asp-page-handler="Delete" asp-route-Id="@blogpost.Id">
+                            <button class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                                        
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

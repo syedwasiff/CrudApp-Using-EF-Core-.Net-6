@@ -1,0 +1,152 @@
+﻿@page
+@model CrudApp.Pages.Admin.Blogs.AddModel
+@{
+}
+
+<h1 class="mb-5">Add Post</h1>
+
+<div>
+    <div class="container">
+        <form method="post" id="myform">
+            <div class="mb-3">
+                <label class="form-label" for="name">Name *</label>
+                <input type="text" class="form-control" name="name" id="name" asp-for="AddBlogPostRequest.Name" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="age">Age *</label>
+                <input type="text" class="form-control" name="age" id="age" asp-for="AddBlogPostRequest.Age" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" asp-for="AddBlogPostRequest.Gender" for="gender">Gender *</label>
+                <div id="gender">
+                    <label class="form-label">Male</label>
+                    <input type="radio" name="gender" value="Male" asp-for="AddBlogPostRequest.Gender" placeholder="Male" checked />
+                    <label class="form-label">FeMale</label>
+                    <input type="radio" name="gender" value="Female" asp-for="AddBlogPostRequest.Gender" placeholder="Female" />
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="email">Email *</label>
+                <input type="email" class="form-control" name="email" id="email" asp-for="AddBlogPostRequest.Email" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="phoneNumber">Phone Number *</label>
+                <input type="text" class="form-control" name="phoneNumber" id="phoneNumber" asp-for="AddBlogPostRequest.PhoneNumber" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="country">Country *</label>
+                <select class="form-select" name="country" id="country" asp-for="AddBlogPostRequest.Country" required>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="state">State *</label>
+                <select class="form-select" name="state" id="state" asp-for="AddBlogPostRequest.State" required>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script type="text/javascript">    
+    let auth_token;
+    $(document).ready(function(){
+        $.ajax({
+            type:'get',
+            url: 'https://www.universal-tutorial.com/api/getaccesstoken',
+            success: function (data) {
+                auth_token = data.auth_token;
+                getCountry(auth_token);
+            },
+            error:function(error){
+                console.log(error);
+            },
+            headers: {
+                "Accept": "application/json",
+                "api-token": "eBeob3D6kGlKmvyAZM06EyF3sbwZDGw1HZdWmwCifpBar1VIIqk-F0TE2y3XIw_S7H4",
+                "user-email": "syed110wasif@gmail.com"
+            }
+        })
+
+        $('#country').change(function () {
+            getState($('#country').val());
+        })       
+    });
+
+    $("#myform").validate({
+        rules:{
+            name:{
+                minlength:2
+            },
+            age: {
+                number: true,
+                min: 18,
+                max: 100
+            },
+            email: {
+                email:true
+            },            
+            phoneNumber: {
+                number: true,
+                minlength: 10,
+                maxlength: 10,
+            }
+        },
+        messages: {
+            name: {
+                required: "Please Enter Your Name",
+                minlength: "Please Insert At least 2 character"
+            },
+            email: "Please Enter your Email",
+            age: "Age Should be between 18 to 100",
+            phoneNumber: "Please Enter you phone number"
+        },
+        submitHandler: function (form) {
+            form.submit();
+        }
+    });
+
+
+    function getCountry(auth_token) {
+        $.ajax({
+            type: 'get',
+            url: 'https://www.universal-tutorial.com/api/countries/',
+            success: function (data) {
+                data.forEach(element => {
+                    $('#country').append('<option val="' + element.country_name + '">' + element.country_name + ' </option>');
+                })                
+            },
+            error: function (error) {
+                console.log(error);
+            },
+            headers: {
+                "Authorization": "Bearer " + auth_token,
+                "Accept": "application/json"
+            }
+        })
+    }
+    function getState(CountryName) {
+        $.ajax({
+            type: 'get',
+            url: 'https://www.universal-tutorial.com/api/states/'+CountryName,
+            success: function (data) {
+                $('#state').empty();
+                data.forEach(element => {
+                    $('#state').append('<option val="' + element.state_name + '">' + element.state_name + '</option>')
+                })
+                //console.log(data);
+            },
+            error: function (error) {
+                console.log(error);
+            },
+            headers: {
+                "Authorization": "Bearer " + auth_token,
+                "Accept": "application/json"
+            }
+        })
+    }
+</script>
